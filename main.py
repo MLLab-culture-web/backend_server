@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
 import uvicorn
 
 from database import engine, Base
@@ -10,7 +11,9 @@ from models import user, survey as survey_model
 app = FastAPI(
     title="CultureLens API with MySQL",
     description="Node.js Express 프로젝트를 FastAPI와 MySQL로 변환한 프로젝트입니다.",
-    version="1.1.0"
+    version="1.1.0",
+    docs_url="/api/docs",
+    redoc_url="/api/redoc"
 )
 
 # CORS 미들웨어 설정
@@ -36,10 +39,25 @@ async def startup_event():
 app.include_router(auth.router, prefix="/api/auth", tags=["인증"])
 app.include_router(survey.router, prefix="/survey", tags=["설문"])
 
-@app.get("/", tags=["Root"])
+@app.get("/", tags=["Root"], response_class=HTMLResponse)
 async def read_root():
-    """루트 경로, 서버의 상태를 확인하는 기본 엔드포인트입니다."""
-    return {"message": "✅ 서버가 잘 작동 중입니다."}
+    """루트 경로, 서버의 상태를 확인하고 API 문서 링크를 제공합니다."""
+    return """
+    <html>
+        <head>
+            <title>CultureLens API</title>
+        </head>
+        <body>
+            <h1>CultureLens API</h1>
+            <p>✅ 서버가 잘 작동 중입니다.</p>
+            <p>API 문서:</p>
+            <ul>
+                <li><a href="/api/docs">Swagger UI</a></li>
+                <li><a href="/api/redoc">ReDoc</a></li>
+            </ul>
+        </body>
+    </html>
+    """
 
 # uvicorn 서버를 직접 실행하려면 아래 코드를 활성화하세요.
 # if __name__ == "__main__":
