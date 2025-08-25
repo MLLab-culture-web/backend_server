@@ -30,4 +30,10 @@ async def login(user_in: schemas.UserCreate, db: AsyncSession = Depends(get_db))
             detail="아이디 또는 비밀번호가 잘못되었습니다.",
         )
 
-    return {"message": "로그인 성공", "user": {"id": user.id}}
+    return {
+        "message": "로그인 성공",
+        "user": {
+            "id": user.id
+            }, 
+        "role": user.role
+    }
